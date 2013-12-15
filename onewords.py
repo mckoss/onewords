@@ -1,24 +1,22 @@
 #!/usr/bin/env python
 import re
+import json
 from itertools import permutations
 from collections import Counter
+from sys import stderr
 
 
-regLine = re.compile(r"(?P<line>\S+)\s+(?P<word>\S+)\s+\((?P<freq>\d+)\)")
+regLine = re.compile(r"(?P<line>\S+)\s+(?P<word>[a-z]+)\s+\((?P<freq>\d+)\)")
 
 
 def main():
-    one_words = {}
+    one_words = []
     patterns = Counter()
-
-    for order in permutations(['o', 'n', 'e']):
-        one_words[''.join(order)] = []
 
     with file("simpsons.txt") as f:
         for line in f:
             m = regLine.match(line)
             if m is None:
-                print line.rstrip()
                 continue
             word = m.group('word')
 
@@ -26,42 +24,43 @@ def main():
             if letter_count('o', word) == 1 and \
                letter_count('n', word) == 1 and \
                letter_count('e', word) == 1:
-                order, pattern = one_order(word)
+                pattern = one_pattern(word)
                 patterns[pattern] += 1
-                one_words[order].append(pattern)
+                one_words.append(word)
 
     for pattern, count in patterns.items():
         if count > 1:
-            print "%s is ambiguous (%d ways)" % (pattern, count)
+            stderr.write("%s is ambiguous (%d ways)\n" % (pattern, count))
             for order in permutations(['o', 'n', 'e']):
-                try:
-                    one_words[order].remove(pattern)
-                except Exception:
-                    pass
+                letters = list(pattern)
+                for ch in order:
+                    letters[letters.index('_')] = ch
+                letters = ''.join(letters)
+                if letters in one_words:
+                    stderr.write("Removing %s\n" % letters)
+                    one_words.remove(letters)
 
-    for order in one_words:
-        print "%d %s-words" % (len(one_words[order]), order)
-        for pattern in one_words[order][:10]:
-            if patterns[pattern] == 1:
-                print pattern
-        print
+    for word in one_words:
+        if word[-1:] == 's' and word[:-1] in one_words:
+            stderr.write("Removing redundant plural: %s\n" % word)
+            one_words.remove(word)
+
+    print json.dumps(one_words, indent=0, separators=(',', ':'))
 
 
-def one_order(word):
+def one_pattern(word):
     """
-    >>> one_order('phone')
-    ('one', 'ph___')
-    >>> one_order('phenom')
-    ('eno', 'ph___m')
-    >>> one_order('exoxn')
-    ('eon', '_x_x_')
+    >>> one_pattern('phone')
+    'ph___'
+    >>> one_pattern('phenom')
+    'ph___m'
+    >>> one_pattern('exoxn')
+    '_x_x_'
     """
     pattern = list(word)
-    order = [word.find(ch) for ch in ('o', 'n', 'e')]
-    order.sort()
-    for i in order:
-        pattern[i] = '_'
-    return ''.join([word[i] for i in order]), ''.join(pattern)
+    for ch in ('o', 'n', 'e'):
+        pattern[pattern.index(ch)] = '_'
+    return ''.join(pattern)
 
 
 def letter_count(letter, word):
