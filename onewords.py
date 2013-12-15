@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+import re
 from itertools import permutations
 from collections import Counter
+
+
+regLine = re.compile(r"(?P<line>\S+)\s+(?P<word>\S+)\s+\((?P<freq>\d+)\)")
 
 
 def main():
@@ -10,8 +14,14 @@ def main():
     for order in permutations(['o', 'n', 'e']):
         one_words[''.join(order)] = []
 
-    with file("DICT.TXT") as dictionary:
-        for word in dictionary:
+    with file("simpsons.txt") as f:
+        for line in f:
+            m = regLine.match(line)
+            if m is None:
+                print line.rstrip()
+                continue
+            word = m.group('word')
+
             word = word.rstrip()
             if letter_count('o', word) == 1 and \
                letter_count('n', word) == 1 and \
