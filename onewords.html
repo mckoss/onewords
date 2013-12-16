@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Onewords</title>
+    <link rel="stylesheet" href="onewords.css">
+  </head>
+  <body>
+    <h1>You Only Get O N E</h1>
+    <p id="subtitle">Type the missing letters - <i>in order</i>.</p>
+    <div id="heading">
+
+      <div id="score">0</div>
+      <div class='hide-not-running' id="clock">0:00</div>
+      <button class="hide-not-ready">Start</button>
+    </div>
+    
+    <div id="container">
+      <p id="next-word"></p>
+    </div>
+
+    <script type="application/dart" src="onewords.dart"></script>
+    <script src="packages/browser/dart.js"></script>
+  </body>
+</html>
