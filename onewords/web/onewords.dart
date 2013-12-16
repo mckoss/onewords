@@ -1,8 +1,11 @@
 import 'dart:html';
 import 'dart:convert';
+import 'hidden-word.dart';
+import 'package:polymer/polymer.dart';
 
 void main() {
-  var game = new OneWordGame(querySelector("#next-word"));
+  initPolymer();
+  var game = new OneWordGame();
 }
 
 void reverseText(MouseEvent event) {
@@ -16,16 +19,17 @@ void reverseText(MouseEvent event) {
 
 class OneWordGame {
   List<String> words;
-  Element wordElt;
+  HiddenWordElement wordElt;
   Element scoreElt;
   int score = 0;
   int currentWord = -1;
-  double msTimeout;
-  double msLast = 0.0;
+  double msWordTimeout;
+  double msNow = 0.0;
+  var modeHandler;
   
   var special = new RegExp(r'[one]');
   
-  OneWordGame(this.wordElt) {
+  OneWordGame() {
     wordElt = querySelector("#next-word");
     scoreElt = querySelector("#score");
     
@@ -41,24 +45,34 @@ class OneWordGame {
   void start() {
     window.onKeyUp.listen(onKey);
     nextWord();
+    modeHandler = runningMode;
     onFrame(0.0);
   }
   
   void nextWord() {
+    if (currentWord == words.length - 1) {
+      modeHandler = null;
+      return;
+    }
     currentWord++;
-    msTimeout = msLast + 1500;
-    wordElt.text = obfuscate(words[currentWord]);
+    msWordTimeout = msNow + 1000;
+    wordElt.setWord(words[currentWord], "one");
     updateScore(0);
     print("Next word: ${words[currentWord]}.");
   }
   
   Future<num> onFrame(double ms) {
-    msLast = ms;
-    if (ms >= msTimeout) {
+    msNow = ms;
+    if (modeHandler != null) {
+      modeHandler();
+    }
+    window.animationFrame.then(onFrame);
+  }
+  
+  void runningMode() {
+    if (msNow >= msWordTimeout) {
       nextWord();
     }
-      
-    window.animationFrame.then(onFrame);
   }
   
   void onKey(KeyboardEvent e) {

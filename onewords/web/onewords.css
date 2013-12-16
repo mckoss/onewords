@@ -21,6 +21,7 @@ h1, p {
 }
 
 #next-word {
+  display: block;
   font-size: 48pt;
   text-align: center;
   margin-top: 140px;
