@@ -29,6 +29,7 @@ class OneWordGame {
   double msGameOver;
   var modeHandler;
   String missingLetters;
+  bool letterError;
   
   static const SECS = 1000;
   static const msGameTime = 60 * SECS;
@@ -83,8 +84,9 @@ class OneWordGame {
     currentWord++;
     msWordTimeout = msNow + 3000;
     missingLetters = getLetters(words[currentWord], "one");
-    wordElt.text = obfuscate(words[currentWord], missingLetters);
-    updateScore(0);
+    wordElt.classes.clear();
+    letterError = false;
+    setWord(words[currentWord], missingLetters);
     print("Next word: ${words[currentWord]}.");
   }
   
@@ -112,34 +114,55 @@ class OneWordGame {
         e.keyCode < 64 || e.keyCode > 64 + 25) {
       return;
     }
+    
     String ch = new String.fromCharCode(e.keyCode).toLowerCase();
-    if (!missingLetters.contains(ch)) {
-      print("Letter ($ch) not in missing set '$missingLetters'.");
+    int index = missingLetters.indexOf(ch);
+    if (index == -1) {
+      return;
+    }
+    print("Pressed key '${ch}'");
+    
+    missingLetters = missingLetters.replaceFirst(ch, '');
+    setWord(words[currentWord], missingLetters);
+    if (letterError) {
       return;
     }
     
-    print("Pressed key '${ch}'");
-    if (ch == missingLetters[0]) {
-      missingLetters = missingLetters.substring(1);
-      updateScore(1);
-      wordElt.text = obfuscate(words[currentWord], missingLetters);
-    } else {
-      updateScore(-1);
+    if (index == 0) {
+      if (missingLetters.length == 0) {
+        updateScore(1);
+      }
+      return;
     }
+    wordElt.classes.add('error');
   }
   
   void updateScore(int delta) {
     score += delta;
     // Should this be done in the animation frame instead of async?
-    scoreElt.text = "$score / ${currentWord * 3}";
+    scoreElt.text = "$score";
   }
   
-  String obfuscate(String word, String hidden) {
-    var sb = new StringBuffer();
+  void setWord(String word, String hidden) {
+    var outer = new DivElement();
     for (var i = 0; i < word.length; i++) {
-      sb.write(hidden.contains(word[i]) ? '_' : word[i]);
+      String ch = word[i];
+      if (hidden.contains(ch)) {
+        ch = '_';
+      }
+      bool isSpecial = "one".contains(ch);
+      if (isSpecial) {
+        var s = new SpanElement();
+        s.classes.add('special');
+        s.text = ch;
+        outer.append(s);
+      } else {
+        outer.appendText(ch);
+      }
     }
-    return sb.toString();
+    wordElt.children
+    ..clear()
+    ..add(outer);
   }
   
   String getLetters(word, letters) {

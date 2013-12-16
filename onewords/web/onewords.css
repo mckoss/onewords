@@ -62,3 +62,7 @@ button {
   margin-top: 140px;
   letter-spacing: 0.2em;
 }
+
+#next-word.error .special {
+  color: red;
+}
