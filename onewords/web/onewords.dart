@@ -18,6 +18,8 @@ class OneWordGame {
   List<String> words;
   Element nextWord;
   
+  var special = new RegExp(r'[one]');
+  
   OneWordGame(this.nextWord) {
     HttpRequest.getString("onewords.json")
     .then(getWords);
@@ -25,11 +27,14 @@ class OneWordGame {
   
   void getWords(String jsonString) {
     words = JSON.decode(jsonString);
-    print(words);
     start();
   }
   
   void start() {
-    nextWord.text = words[0];
+    nextWord.text = obfuscate(words[0]);
+    }
+  
+  String obfuscate(String word) {
+    return word.replaceAll(special, '_');
   }
 }
