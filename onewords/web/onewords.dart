@@ -33,7 +33,7 @@ class OneWordGame {
   bool letterError;
   
   static const secs = 1000;
-  static const msGameTime = 60 * secs;
+  static const msGameTime = 30 * secs;
   static const msWordTime = 3 * secs;
   static const msFlashTime = 200;
   
@@ -60,6 +60,7 @@ class OneWordGame {
   
   void onStart(Event e) {
     currentWord = -1;
+    score = 0;
     nextWord();
     modeHandler = runningMode;
     setMode('running');
