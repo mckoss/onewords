@@ -1,6 +1,7 @@
 import 'dart:html';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math';
 
 void main() {
   var game = new OneWordGame();
@@ -31,8 +32,10 @@ class OneWordGame {
   String missingLetters;
   bool letterError;
   
-  static const SECS = 1000;
-  static const msGameTime = 60 * SECS;
+  static const secs = 1000;
+  static const msGameTime = 60 * secs;
+  static const msWordTime = 3 * secs;
+  static const msFlashTime = 200;
   
   var special = new RegExp(r'[one]');
   
@@ -82,12 +85,13 @@ class OneWordGame {
       return;
     }
     currentWord++;
-    msWordTimeout = msNow + 3000;
+    msWordTimeout = msNow + msWordTime;
     missingLetters = getLetters(words[currentWord], "one");
     wordElt.classes.clear();
     letterError = false;
     setWord(words[currentWord], missingLetters);
     print("Next word: ${words[currentWord]}.");
+    updateScore(0);
   }
   
   Future<num> onFrame(double ms) {
@@ -131,16 +135,19 @@ class OneWordGame {
     if (index == 0) {
       if (missingLetters.length == 0) {
         updateScore(1);
+        msGameOver += max(0.0, msWordTimeout - msNow);
+        msWordTimeout = min(msWordTimeout, msNow + msFlashTime);
       }
       return;
     }
     wordElt.classes.add('error');
+    letterError = true;
   }
   
   void updateScore(int delta) {
     score += delta;
     // Should this be done in the animation frame instead of async?
-    scoreElt.text = "$score";
+    scoreElt.text = "$score / $currentWord";
   }
   
   void setWord(String word, String hidden) {
