@@ -16,11 +16,19 @@ void reverseText(MouseEvent event) {
 
 class OneWordGame {
   List<String> words;
-  Element nextWord;
+  Element wordElt;
+  Element scoreElt;
+  int score = 0;
+  int currentWord = -1;
+  double msTimeout;
+  double msLast = 0.0;
   
   var special = new RegExp(r'[one]');
   
-  OneWordGame(this.nextWord) {
+  OneWordGame(this.wordElt) {
+    wordElt = querySelector("#next-word");
+    scoreElt = querySelector("#score");
+    
     HttpRequest.getString("onewords.json")
     .then(getWords);
   }
@@ -31,8 +39,37 @@ class OneWordGame {
   }
   
   void start() {
-    nextWord.text = obfuscate(words[0]);
+    window.onKeyUp.listen(onKey);
+    nextWord();
+    onFrame(0.0);
+  }
+  
+  void nextWord() {
+    currentWord++;
+    msTimeout = msLast + 1500;
+    wordElt.text = obfuscate(words[currentWord]);
+    updateScore(0);
+    print("Next word: ${words[currentWord]}.");
+  }
+  
+  Future<num> onFrame(double ms) {
+    msLast = ms;
+    if (ms >= msTimeout) {
+      nextWord();
     }
+      
+    window.animationFrame.then(onFrame);
+  }
+  
+  void onKey(KeyboardEvent e) {
+    print("Pressed key ${e.keyCode}");
+    updateScore(1);
+  }
+  
+  void updateScore(int delta) {
+    score += delta;
+    scoreElt.text = "$score / ${currentWord}";
+  }
   
   String obfuscate(String word) {
     return word.replaceAll(special, '_');
