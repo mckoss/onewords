@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'dart:convert';
+import 'dart:async';
 
 void main() {
   var game = new OneWordGame();
@@ -25,8 +26,12 @@ class OneWordGame {
   int currentWord = -1;
   double msWordTimeout;
   double msNow = 0.0;
+  double msGameOver;
   var modeHandler;
   String missingLetters;
+  
+  static const SECS = 1000;
+  static const msGameTime = 60 * SECS;
   
   var special = new RegExp(r'[one]');
   
@@ -40,8 +45,7 @@ class OneWordGame {
     buttonElt.onClick.listen(onStart);
     window.onKeyUp.listen(onKey);
     
-    HttpRequest.getString("onewords.json")
-    .then(getWords);
+    HttpRequest.getString("onewords.json").then(getWords);
     onFrame(0.0);
   }
   
@@ -54,12 +58,26 @@ class OneWordGame {
     currentWord = -1;
     nextWord();
     modeHandler = runningMode;
-    bodyElt.classes..clear()..add('running');
+    setMode('running');
+    msGameOver = msNow + msGameTime;
+  }
+  
+  void setMode(String mode) {
+    bodyElt.classes
+    ..clear()
+    ..add(mode);
+    switch (mode) {
+      case 'running':
+        modeHandler = runningMode;
+        break;
+      default:
+        modeHandler = null;
+    }
   }
   
   void nextWord() {
     if (currentWord == words.length - 1) {
-      modeHandler = null;
+      setMode('ready');
       return;
     }
     currentWord++;
@@ -79,6 +97,11 @@ class OneWordGame {
   }
   
   void runningMode() {
+    if (msNow > msGameOver) {
+      setMode('ready');
+      return;
+    }
+    clockElt.text = ((msGameOver - msNow) / 1000).floor().toString();
     if (msNow >= msWordTimeout) {
       nextWord();
     }
