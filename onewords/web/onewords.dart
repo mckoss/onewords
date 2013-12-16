@@ -16,8 +16,11 @@ void reverseText(MouseEvent event) {
 
 class OneWordGame {
   List<String> words;
+  Element bodyElt;
   Element wordElt;
   Element scoreElt;
+  Element clockElt;
+  Element buttonElt;
   int score = 0;
   int currentWord = -1;
   double msWordTimeout;
@@ -28,23 +31,30 @@ class OneWordGame {
   var special = new RegExp(r'[one]');
   
   OneWordGame() {
-    wordElt = querySelector("#next-word");
-    scoreElt = querySelector("#score");
+    wordElt = querySelector('#next-word');
+    scoreElt = querySelector('#score');
+    clockElt = querySelector('#clock');
+    buttonElt = querySelector('button');
+    bodyElt = querySelector('body');
+    
+    buttonElt.onClick.listen(onStart);
+    window.onKeyUp.listen(onKey);
     
     HttpRequest.getString("onewords.json")
     .then(getWords);
+    onFrame(0.0);
   }
   
   void getWords(String jsonString) {
     words = JSON.decode(jsonString);
-    start();
+    bodyElt.classes.add('ready');
   }
   
-  void start() {
-    window.onKeyUp.listen(onKey);
+  void onStart(Event e) {
+    currentWord = -1;
     nextWord();
     modeHandler = runningMode;
-    onFrame(0.0);
+    bodyElt.classes..clear()..add('running');
   }
   
   void nextWord() {
@@ -75,7 +85,8 @@ class OneWordGame {
   }
   
   void onKey(KeyboardEvent e) {
-    if (missingLetters.length == 0 || e.keyCode < 64 || e.keyCode > 64 + 25) {
+    if (missingLetters == null || missingLetters.length == 0 ||
+        e.keyCode < 64 || e.keyCode > 64 + 25) {
       return;
     }
     String ch = new String.fromCharCode(e.keyCode).toLowerCase();
