@@ -1,10 +1,7 @@
 import 'dart:html';
 import 'dart:convert';
-import 'hidden-word.dart';
-import 'package:polymer/polymer.dart';
 
 void main() {
-  initPolymer();
   var game = new OneWordGame();
 }
 
@@ -19,13 +16,14 @@ void reverseText(MouseEvent event) {
 
 class OneWordGame {
   List<String> words;
-  HiddenWordElement wordElt;
+  Element wordElt;
   Element scoreElt;
   int score = 0;
   int currentWord = -1;
   double msWordTimeout;
   double msNow = 0.0;
   var modeHandler;
+  String missingLetters;
   
   var special = new RegExp(r'[one]');
   
@@ -55,8 +53,9 @@ class OneWordGame {
       return;
     }
     currentWord++;
-    msWordTimeout = msNow + 1000;
-    wordElt.setWord(words[currentWord], "one");
+    msWordTimeout = msNow + 3000;
+    missingLetters = getLetters(words[currentWord], "one");
+    wordElt.text = obfuscate(words[currentWord], missingLetters);
     updateScore(0);
     print("Next word: ${words[currentWord]}.");
   }
@@ -76,16 +75,46 @@ class OneWordGame {
   }
   
   void onKey(KeyboardEvent e) {
-    print("Pressed key ${e.keyCode}");
-    updateScore(1);
+    if (missingLetters.length == 0 || e.keyCode < 64 || e.keyCode > 64 + 25) {
+      return;
+    }
+    String ch = new String.fromCharCode(e.keyCode).toLowerCase();
+    if (!missingLetters.contains(ch)) {
+      print("Letter ($ch) not in missing set '$missingLetters'.");
+      return;
+    }
+    
+    print("Pressed key '${ch}'");
+    if (ch == missingLetters[0]) {
+      missingLetters = missingLetters.substring(1);
+      updateScore(1);
+      wordElt.text = obfuscate(words[currentWord], missingLetters);
+    } else {
+      updateScore(-1);
+    }
   }
   
   void updateScore(int delta) {
     score += delta;
-    scoreElt.text = "$score / ${currentWord}";
+    // Should this be done in the animation frame instead of async?
+    scoreElt.text = "$score / ${currentWord * 3}";
   }
   
-  String obfuscate(String word) {
-    return word.replaceAll(special, '_');
+  String obfuscate(String word, String hidden) {
+    var sb = new StringBuffer();
+    for (var i = 0; i < word.length; i++) {
+      sb.write(hidden.contains(word[i]) ? '_' : word[i]);
+    }
+    return sb.toString();
+  }
+  
+  String getLetters(word, letters) {
+    var sb = new StringBuffer();
+    for (var i = 0; i < word.length; i++) {
+      if (letters.contains(word[i])) {
+        sb.write(word[i]);
+      }
+    }
+    return sb.toString();
   }
 }
