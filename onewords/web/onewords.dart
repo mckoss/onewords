@@ -7,22 +7,13 @@ void main() {
   var game = new OneWordGame();
 }
 
-void reverseText(MouseEvent event) {
-  var text = querySelector("#sample_text_id").text;
-  var buffer = new StringBuffer();
-  for (int i = text.length - 1; i >= 0; i--) {
-    buffer.write(text[i]);
-  }
-  querySelector("#sample_text_id").text = buffer.toString();
-}
-
 class OneWordGame {
   List<String> words;
-  Element bodyElt;
-  Element wordElt;
-  Element scoreElt;
-  Element clockElt;
-  Element buttonElt;
+  Element bodyElt = querySelector('body');
+  Element wordElt = querySelector('#next-word');
+  Element scoreElt = querySelector('#score');
+  Element clockElt = querySelector('#clock');
+  Element buttonElt = querySelector('button');
   int score = 0;
   int currentWord = -1;
   double msWordTimeout;
@@ -42,12 +33,6 @@ class OneWordGame {
   var special = new RegExp(r'[one]');
   
   OneWordGame() {
-    wordElt = querySelector('#next-word');
-    scoreElt = querySelector('#score');
-    clockElt = querySelector('#clock');
-    buttonElt = querySelector('button');
-    bodyElt = querySelector('body');
-    
     buttonElt.onClick.listen(onStart);
     window.onKeyUp.listen(onKey);
     
