@@ -1,1 +1,3 @@
 rsync -v -r onewords/build/ ../onewords-ghpages
+cd ../onewords-ghpages
+cp onewords.html index.html
