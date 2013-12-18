@@ -26,6 +26,7 @@ class OneWordGame {
   int score = 0;
   int currentWord = -1;
   double msWordTimeout;
+  double msStartWord;
   double msNow = 0.0;
   double msGameOver;
   var modeHandler;
@@ -36,6 +37,7 @@ class OneWordGame {
   static const msGameTime = 30 * secs;
   static const msWordTime = 3 * secs;
   static const msFlashTime = 200;
+  static const msCognitive = 100;
   
   var special = new RegExp(r'[one]');
   
@@ -87,6 +89,7 @@ class OneWordGame {
     }
     currentWord++;
     msWordTimeout = msNow + msWordTime;
+    msStartWord = msNow;
     missingLetters = getLetters(words[currentWord], "one");
     wordElt.classes.clear();
     letterError = false;
@@ -127,6 +130,11 @@ class OneWordGame {
     }
     print("Pressed key '${ch}'");
     
+    if (index != 0 && msNow - msStartWord < msCognitive) {
+      print("Filtered mis-type-ahead letter.");
+      return;
+    }
+    
     missingLetters = missingLetters.replaceFirst(ch, '');
     setWord(words[currentWord], missingLetters);
     if (letterError) {
@@ -141,6 +149,7 @@ class OneWordGame {
       }
       return;
     }
+    
     wordElt.classes.add('error');
     letterError = true;
   }

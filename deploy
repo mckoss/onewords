@@ -1,0 +1,1 @@
+rsync -v -r onewords/build/ ../onewords-ghpages

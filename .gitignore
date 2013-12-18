@@ -1,6 +1,7 @@
-*.pyc
+onewords/build
 packages
 .project
+*.pyc
 *.iml
 *.ipr
 *.iws
