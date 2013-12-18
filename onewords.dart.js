@@ -2821,7 +2821,7 @@ call$1:function(a){var z=J.x(a)
 return typeof a==="object"&&a!==null&&!!z.$iscv},
 $is_aB:true},GS:{"":"Tp;",
 call$1:function(a){return J.Mp(a)},
-$is_aB:true}}],["","file:///Users/mckoss/src/onewords/onewords/web/onewords.dart",,T,{E2:function(){T.VJ()},Re:{"":"a;z2,S1,ca,hK,Xn,pI,V3,pf,xt,xi,U1,pW,MZ,SP,rO",
+$is_aB:true}}],["","file:///Users/mckoss/src/onewords/onewords/web/onewords.dart",,T,{E2:function(){T.VJ()},Re:{"":"a;z2,S1,ca,hK,Xn,pI,V3,pf,xt,Ti,xi,U1,pW,MZ,SP,rO",
 C8:function(){return this.pW.call$0()},
 ci:function(a){var z
 this.z2=C.Ct.kV(a)
@@ -2848,6 +2848,7 @@ if(typeof y!=="number")throw y.W()
 if(z===y-1){this.dh("ready")
 return}this.pf=this.pf+1
 this.xt=J.WB(this.xi,3000)
+this.Ti=this.xi
 this.MZ=this.xr(J.UQ(this.z2,this.pf),"one")
 z=J.pP(this.ca)
 z.V1(z)
@@ -2867,7 +2868,7 @@ if(typeof y!=="number")throw y.V()
 z.textContent=C.jn.bu(C.CD.yu(Math.floor(y/1000)))
 if(J.J5(this.xi,this.xt))this.jO()},
 gTI:function(){return new P.EV(this,T.Re.prototype.Vh,null,"Vh")},
-MA:function(a){var z,y,x
+MA:function(a){var z,y,x,w
 z=this.MZ
 if(z!=null)if(z.length!==0){z=J.RE(a).gHQ(a)
 if(typeof z!=="number")throw z.C()
@@ -2880,12 +2881,14 @@ y=P.Oo(J.Zm(a)).toLowerCase()
 x=J.UU(this.MZ,y)
 if(x===-1)return
 P.JS("Pressed key '"+y+"'")
-z=this.MZ
-z.toString
-this.MZ=H.bR(z,y,"")
+z=x===0
+if(!z&&J.u6(J.xH(this.xi,this.Ti),100)){P.JS("Filtered mis-type-ahead letter.")
+return}w=this.MZ
+w.toString
+this.MZ=H.bR(w,y,"")
 this.qE(J.UQ(this.z2,this.pf),this.MZ)
 if(this.SP===!0)return
-if(x===0){if(this.MZ.length===0){this.QM(1)
+if(z){if(this.MZ.length===0){this.QM(1)
 this.U1=J.WB(this.U1,P.y(0,J.xH(this.xt,this.xi)))
 this.xt=P.J(this.xt,J.WB(this.xi,200))}return}z=J.pP(this.ca)
 z.h(z,"error")
@@ -2949,7 +2952,7 @@ H.VM(z,[H.W8(y,"RO",0)])
 z.Zz()
 W.Kn("onewords.json",null,null).ml(this.gHF())
 this.Js(0)},
-static:{"":"YH,Qp,TT,H3",VJ:function(){var z=new T.Re(null,null,null,null,null,null,0,-1,null,0,null,null,null,null,new H.VR(H.v4("[one]",!1,!0,!1),null,null))
+static:{"":"YH,Qp,TT,H3,Tx",VJ:function(){var z=new T.Re(null,null,null,null,null,null,0,-1,null,null,0,null,null,null,null,new H.VR(H.v4("[one]",!1,!0,!1),null,null))
 z.r9()
 return z}}}},1],])
 I.$finishClasses($$,$,null)
@@ -3237,6 +3240,8 @@ J.q8=function(a){return J.U6(a).gB(a)}
 J.qA=function(a){return J.w1(a).br(a)}
 J.qV=function(a,b,c,d){return J.RE(a).On(a,b,c,d)}
 J.rr=function(a){return J.rY(a).bS(a)}
+J.u6=function(a,b){if(typeof a=="number"&&typeof b=="number")return a<b
+return J.Wx(a).C(a,b)}
 J.w8=function(a){return J.RE(a).gkc(a)}
 J.xH=function(a,b){if(typeof a=="number"&&typeof b=="number")return a-b
 return J.Wx(a).W(a,b)}
