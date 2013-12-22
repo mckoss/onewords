@@ -35,12 +35,20 @@ class OneWordGame {
   OneWordGame() {
     _buttonElt.onClick.listen(onStart);
     window.onKeyUp.listen(onKey);
-    _clockElt.on['webkitAnimationEnd'].listen((event) =>
-      _clockElt.classes.remove('pulsar')
-      );
-    
+    setupPulsar(_clockElt);
+      
     HttpRequest.getString("onewords.json").then(getWords);
     onFrame(0.0);
+  }
+  
+  void setupPulsar(Element elt) {
+    elt.on['webkitAnimationEnd'].listen((event) =>
+        elt.classes.remove('pulsar')
+    );
+  }
+  
+  void pulse(elt) {
+    elt.classes.add('pulsar');
   }
   
   void getWords(String jsonString) {
@@ -99,7 +107,7 @@ class OneWordGame {
       setMode('ready');
       return;
     }
-    _clockElt.text = ((msGameOver - msNow) / 1000).floor().toString();
+    _clockElt.text = ((msGameOver - msNow) / secs).floor().toString();
     if (msNow >= msWordTimeout) {
       nextWord();
     }
@@ -132,8 +140,8 @@ class OneWordGame {
     if (index == 0) {
       if (missingLetters.length == 0) {
         updateScore(1);
-        if (msWordTimeout - msNow >= 1.0) {
-          _clockElt.classes.add('pulsar');
+        if (msWordTimeout - msNow >= 1 * secs) {
+          pulse(_clockElt);
         }
         msGameOver += max(0.0, msWordTimeout - msNow);
         msWordTimeout = min(msWordTimeout, msNow + msFlashTime);
