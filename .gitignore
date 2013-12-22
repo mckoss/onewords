@@ -10,3 +10,6 @@ packages
 *.js_
 *.js.deps
 *.js.map
+.DS_Store
+\#*#
+*.dart.precompiled.js
