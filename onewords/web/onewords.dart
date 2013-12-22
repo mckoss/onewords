@@ -9,11 +9,11 @@ void main() {
 
 class OneWordGame {
   List<String> words;
-  Element bodyElt = querySelector('body');
-  Element wordElt = querySelector('#next-word');
-  Element scoreElt = querySelector('#score');
-  Element clockElt = querySelector('#clock');
-  Element buttonElt = querySelector('button');
+  Element _bodyElt = querySelector('body');
+  Element _wordElt = querySelector('#next-word');
+  Element _scoreElt = querySelector('#score');
+  Element _clockElt = querySelector('#clock');
+  Element _buttonElt = querySelector('button');
   int score = 0;
   int currentWord = -1;
   double msWordTimeout;
@@ -33,8 +33,11 @@ class OneWordGame {
   var special = new RegExp(r'[one]');
   
   OneWordGame() {
-    buttonElt.onClick.listen(onStart);
+    _buttonElt.onClick.listen(onStart);
     window.onKeyUp.listen(onKey);
+    _clockElt.on['webkitAnimationEnd'].listen((event) =>
+      _clockElt.classes.remove('pulsar')
+      );
     
     HttpRequest.getString("onewords.json").then(getWords);
     onFrame(0.0);
@@ -42,7 +45,7 @@ class OneWordGame {
   
   void getWords(String jsonString) {
     words = JSON.decode(jsonString);
-    bodyElt.classes.add('ready');
+    _bodyElt.classes.add('ready');
   }
   
   void onStart(Event e) {
@@ -55,7 +58,7 @@ class OneWordGame {
   }
   
   void setMode(String mode) {
-    bodyElt.classes
+    _bodyElt.classes
     ..clear()
     ..add(mode);
     switch (mode) {
@@ -76,7 +79,7 @@ class OneWordGame {
     msWordTimeout = msNow + msWordTime;
     msStartWord = msNow;
     missingLetters = getLetters(words[currentWord], "one");
-    wordElt.classes.clear();
+    _wordElt.classes.clear();
     letterError = false;
     setWord(words[currentWord], missingLetters);
     print("Next word: ${words[currentWord]}.");
@@ -96,7 +99,7 @@ class OneWordGame {
       setMode('ready');
       return;
     }
-    clockElt.text = ((msGameOver - msNow) / 1000).floor().toString();
+    _clockElt.text = ((msGameOver - msNow) / 1000).floor().toString();
     if (msNow >= msWordTimeout) {
       nextWord();
     }
@@ -129,20 +132,23 @@ class OneWordGame {
     if (index == 0) {
       if (missingLetters.length == 0) {
         updateScore(1);
+        if (msWordTimeout - msNow >= 1.0) {
+          _clockElt.classes.add('pulsar');
+        }
         msGameOver += max(0.0, msWordTimeout - msNow);
         msWordTimeout = min(msWordTimeout, msNow + msFlashTime);
       }
       return;
     }
     
-    wordElt.classes.add('error');
+    _wordElt.classes.add('error');
     letterError = true;
   }
   
   void updateScore(int delta) {
     score += delta;
     // Should this be done in the animation frame instead of async?
-    scoreElt.text = "$score / $currentWord";
+    _scoreElt.text = "$score / $currentWord";
   }
   
   void setWord(String word, String hidden) {
@@ -162,7 +168,7 @@ class OneWordGame {
         outer.appendText(ch);
       }
     }
-    wordElt.children
+    _wordElt.children
     ..clear()
     ..add(outer);
   }

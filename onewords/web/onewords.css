@@ -34,9 +34,10 @@ button {
 
 #clock {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  font-size: 32px;
+  bottom: -16px;
+  right: -16px;
+  font-size: 64px;
+  -webkit-transform: scale(0.5, 0.5);
 }
 
 #score {
@@ -46,6 +47,23 @@ button {
   bottom: 5px;
   text-align: center;
   font-size: 32px;
+}
+
+.pulsar {
+  -webkit-animation-duration: 0.15s;
+  -webkit-animation-name: pulsar;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-iteration-count: 2;
+}
+
+@-webkit-keyframes pulsar {
+  from {
+    -webkit-transform: scale(0.5, 0.5);
+  }
+  
+  to {
+    -webkit-transform: scale(1, 1);
+  }
 }
 
 #container {
