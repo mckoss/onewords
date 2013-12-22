@@ -37,7 +37,7 @@ button {
   bottom: -16px;
   right: -16px;
   font-size: 64px;
-  -webkit-transform: scale(0.5, 0.5);
+  -webkit-transform: scale(0.5);
 }
 
 #score {
@@ -58,11 +58,11 @@ button {
 
 @-webkit-keyframes pulsar {
   from {
-    -webkit-transform: scale(0.5, 0.5);
+    -webkit-transform: scale(0.5);
   }
   
   to {
-    -webkit-transform: scale(1, 1);
+    -webkit-transform: scale(1.0);
   }
 }
 
